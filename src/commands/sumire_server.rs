@@ -153,7 +153,6 @@ async fn daily(ctx: &Context, msg: &Message) -> CommandResult {
 
     let now = Local::now().naive_local();
     let today = (now-Duration::hours(4)).date();
-    println!("{} {}", data.last_daily, today);
 
     if data.last_daily >= today {
         let next = (today+Duration::days(1)).and_hms(4, 0, 0).format("%m/%d-%H:%S");
