@@ -14,6 +14,14 @@ use diesel::prelude::*;
 use std::collections::HashMap;
 use rand::prelude::*;
 use chrono::{Local, Duration};
+use once_cell::sync::Lazy;
+
+static ROLES: Lazy<HashMap<RoleId, &str>> = Lazy::new(|| {
+    HashMap::from([
+        (876675066329432114.into(), "<#820939592999108648>で整地鯖の記念日実績を通知します。"),
+        (941684228624633896.into(), "お遊びロールです。破産したら付けてみましょう。")
+    ])
+});
 
 
 #[command]
@@ -177,6 +185,75 @@ async fn daily(ctx: &Context, msg: &Message) -> CommandResult {
 }
 
 
+#[command]
+#[sub_commands(list, add, remove)]
+async fn role(ctx: &Context, msg: &Message) -> CommandResult {
+    msg.channel_id.say(&ctx, "正しいサブコマンドが指定されませんでした").await?;
+    Ok(())
+}
+
+#[command]
+async fn list(ctx: &Context, msg: &Message) -> CommandResult {
+    let guild_roles = SUMIRE_GUILD.roles(ctx).await?;
+    msg.channel_id.send_message(&ctx, |m| {
+        m.embed(|e| {
+            e.title("着脱可能なロールの一覧");
+            for (id, role_info) in ROLES.iter() {
+                let role = &guild_roles[id];
+                e.field(&role.name, role_info, false);
+            }
+            e
+        }).reference_message(msg)
+        .allowed_mentions(|a| a.empty_parse())
+    }).await?;
+    Ok(())
+}
+
+#[command]
+async fn add(ctx: &Context, msg: &Message, args: Args) -> CommandResult {
+    let mut member = msg.member(ctx).await?;
+
+    let role_name = ArgsWrapper(args).string()?;
+    let role = Role::convert(ctx, Some(SUMIRE_GUILD), None, &role_name).await?;
+
+    if !ROLES.contains_key(&role.id) {
+        msg.reply(ctx, "そのロールの操作はできません").await?;
+        return Ok(());
+    }
+
+    if member.roles.contains(&role.id) {
+        msg.reply(ctx, "既に付与されています").await?;
+    } else {
+        member.add_role(ctx, role.id).await?;
+        msg.reply(ctx, format!("{}を付与しました", role.name)).await?;
+    }
+
+    Ok(())
+}
+
+#[command]
+async fn remove(ctx: &Context, msg: &Message, args: Args) -> CommandResult {
+    let mut member = msg.member(ctx).await?;
+
+    let role_name = ArgsWrapper(args).string()?;
+    let role = Role::convert(ctx, Some(SUMIRE_GUILD), None, &role_name).await?;
+
+    if !ROLES.contains_key(&role.id) {
+        msg.reply(ctx, "そのロールの操作はできません").await?;
+        return Ok(());
+    }
+
+    if !member.roles.contains(&role.id) {
+        msg.reply(ctx, "そのロールは付与されていません").await?;
+    } else {
+        member.remove_role(ctx, role.id).await?;
+        msg.reply(ctx, format!("{}を削除しました", role.name)).await?;
+    }
+
+    Ok(())
+}
+
+
 #[group]
-#[commands(point)]
+#[commands(point, role)]
 struct SumireServer;
