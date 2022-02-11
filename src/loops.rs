@@ -21,6 +21,7 @@ pub async fn start(ctx: Context) {
         tokio::time::sleep(Duration::from_secs_f64(wait_for)).await;
 
         let now = Local::now();
+        eprintln!("{:?}", now);
         if let Err(why) = minutely(&ctx, &now.naive_local()).await {
             send_log(&ctx, why).await;
         }
