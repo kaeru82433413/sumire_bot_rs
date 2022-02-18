@@ -6,7 +6,6 @@ pub const SUMIRE_GUILD: GuildId = GuildId(504299765379366912);
 pub const REGULAR_NOTIFICATION_CHANNEL: ChannelId = ChannelId(820939592999108648);
 pub const LOGIN_NOTIFICATION_CHANNEL: ChannelId = ChannelId(769174714538786847);
 pub const ERROR_LOG_CHANNEL: ChannelId = ChannelId(782423473569660969);
-pub const COMMAND_PREFIX: &str = if IS_DEBUG {"?"} else {"!"};
 pub const WHITESPACES: &[u32] = &[
     // https://www.unicode.org/Public/UCD/latest/ucd/PropList.txt
     0x0009, 0x000A, 0x000B, 0x000C, 0x000D,

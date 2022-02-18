@@ -67,18 +67,36 @@ use sumire_bot::commands::*;
 use sumire_bot::consts;
 use sumire_bot::utils::*;
 
+struct PrefixesKey;
+impl TypeMapKey for PrefixesKey {
+    type Value = Vec<&'static str>;
+}
+
+
 #[tokio::main]
 async fn main() {
     let token = env::var("SUMIRE_BOT_TOKEN").expect("環境変数の取得に失敗しました");
 
+    let prefixes = if consts::IS_DEBUG {vec!["?"]} else {vec!["s/", "!"]};
+    async fn starts_with_prefix(ctx: &Context, content: &str) -> bool {
+        let data = ctx.data.read().await;
+        let prefixes = data.get::<PrefixesKey>().unwrap();
+        for prefix in prefixes {
+            if content.starts_with(prefix) {
+                return true;
+            }
+        }
+        false
+    }
     let delimiters = consts::WHITESPACES.into_iter().map(|&c| char::from_u32(c).unwrap());
     let owners = HashSet::from([481027469202423808.into()]);
 
     let framework = StandardFramework::new()
-        .configure(|c| c.prefix(consts::COMMAND_PREFIX).delimiters(delimiters).owners(owners)
+        .configure(|c| c.prefixes(&prefixes).delimiters(delimiters).owners(owners)
             .dynamic_prefix(|ctx, msg| {
                 Box::pin(async move {
-                    if !consts::IS_DEBUG && msg.channel_id.name(ctx).await.unwrap().contains("コマンド")
+                    if !consts::IS_DEBUG  && !starts_with_prefix(ctx, &msg.content).await
+                        && msg.channel_id.name(ctx).await.unwrap().contains("コマンド")
                         {Some("".into())} else {None}
                 })
             }))
@@ -90,6 +108,10 @@ async fn main() {
     let mut client = 
         Client::builder(&token).event_handler(Handler).framework(framework).intents(GatewayIntents::all())
         .application_id(769157262697824256).await.expect("クライアントの作成に失敗しました");
+    {
+        let mut data = client.data.write().await;
+        data.insert::<PrefixesKey>(prefixes);
+    }
     database::insert_pool(&client).await;
     
     if let Err(why) = client.start().await {
