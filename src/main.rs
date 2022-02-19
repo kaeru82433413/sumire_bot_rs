@@ -10,11 +10,7 @@ use serenity::{
         CommandResult,
         StandardFramework,
     },
-    model::{
-        channel::{Message},
-        gateway::Ready,
-        id::*,
-    },
+    model::prelude::*,
 };
 use sumire_bot::loops;
 
@@ -32,6 +28,10 @@ impl EventHandler for Handler {
             consts::LOGIN_NOTIFICATION_CHANNEL.say(&ctx, format!("{} がログインしたよ！", ready.user.tag())).await.unwrap();
         }
         loops::start(ctx).await;
+    }
+
+    async fn thread_create(&self, ctx: Context, thread: GuildChannel) {
+        ctx.http.join_thread_channel(thread.id.0).await.unwrap();
     }
 }
 
@@ -60,6 +60,7 @@ async fn after(ctx: &Context, msg: &Message, command_name: &str, command_result:
     } else {
         println!("{} でエラーが発生しました: {:?}", command_name, err);
         error_log::send_log(ctx, err).await;
+        
     }
 }
 
