@@ -95,7 +95,7 @@ async fn main() {
         .configure(|c| c.prefixes(&prefixes).delimiters(delimiters).owners(owners)
             .dynamic_prefix(|ctx, msg| {
                 Box::pin(async move {
-                    if !consts::IS_DEBUG  && !starts_with_prefix(ctx, &msg.content).await
+                    if !consts::IS_DEBUG && !starts_with_prefix(ctx, &msg.content).await
                         && msg.channel_id.name(ctx).await.unwrap().contains("コマンド")
                         {Some("".into())} else {None}
                 })
