@@ -58,9 +58,15 @@ async fn after(ctx: &Context, msg: &Message, command_name: &str, command_result:
         msg.channel_id.say(&ctx, format!(r#"引数として与えられた"{}"を整数に変換できませんでした({})"#, strings::safe(raw), reason)).await.unwrap();
         
     } else {
-        println!("{} でエラーが発生しました: {:?}", command_name, err);
+        eprintln!("{} でエラーが発生しました: {:?}", command_name, err);
         discord::send_log(ctx, err).await;
-        
+        reply_to(ctx, msg, |m| {
+            m.embed(|e| {
+                e.title("エラーが発生しました");
+                e.description("開発者に報告しました。修正をお待ちください");
+                e
+            })
+        }).await.unwrap();
     }
 }
 
