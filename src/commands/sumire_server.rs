@@ -76,8 +76,7 @@ async fn ranking(ctx: &Context, msg: &Message, args: Args) -> CommandResult {
         m.embed(|e| {
             e.title(title)
              .description(description)
-        }).reference_message(msg)
-        .allowed_mentions(|a| a.empty_parse())
+        })
     }).await?;
     Ok(())
 }
