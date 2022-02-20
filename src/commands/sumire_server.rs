@@ -72,7 +72,7 @@ async fn ranking(ctx: &Context, msg: &Message, args: Args) -> CommandResult {
     }
 
     let title = format!("ポイントランキング ({}/{}ページ)", page+1, pages);
-    msg.channel_id.send_message(&ctx, |m| {
+    reply_to(ctx, msg, |m| {
         m.embed(|e| {
             e.title(title)
              .description(description)
@@ -195,7 +195,7 @@ async fn role(ctx: &Context, msg: &Message) -> CommandResult {
 #[command]
 async fn list(ctx: &Context, msg: &Message) -> CommandResult {
     let guild_roles = SUMIRE_GUILD.roles(ctx).await?;
-    msg.channel_id.send_message(&ctx, |m| {
+    reply_to(ctx, msg, |m| {
         m.embed(|e| {
             e.title("着脱可能なロールの一覧");
             for (id, role_info) in ROLES.iter() {
@@ -203,8 +203,7 @@ async fn list(ctx: &Context, msg: &Message) -> CommandResult {
                 e.field(&role.name, role_info, false);
             }
             e
-        }).reference_message(msg)
-        .allowed_mentions(|a| a.empty_parse())
+        })
     }).await?;
     Ok(())
 }

@@ -6,4 +6,5 @@ pub use database::get_connection;
 
 pub mod strings;
 pub mod random;
-pub mod error_log;
+pub mod discord;
+pub use discord::reply_to;

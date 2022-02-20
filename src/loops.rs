@@ -3,7 +3,7 @@ use serenity::utils::MessageBuilder;
 use serenity::framework::standard::CommandResult;
 use serenity::model::id::RoleId;
 use chrono::{Local, NaiveDateTime, NaiveDate, Timelike, Datelike, Weekday};
-use crate::utils::error_log::send_log;
+use crate::utils::discord::send_log;
 use tokio::{self, time::Duration};
 use crate::consts;
 use diesel::prelude::*;

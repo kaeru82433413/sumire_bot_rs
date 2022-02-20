@@ -59,7 +59,7 @@ async fn after(ctx: &Context, msg: &Message, command_name: &str, command_result:
         
     } else {
         println!("{} でエラーが発生しました: {:?}", command_name, err);
-        error_log::send_log(ctx, err).await;
+        discord::send_log(ctx, err).await;
         
     }
 }
