@@ -138,7 +138,7 @@ fn search_today_achievements(today: &NaiveDate) -> Vec<(i32, &str)> {
     });
 
     if (today.month(), today.day()) == (3, (20.8431 + 0.242194 * (today.year() as f64 - 1980.0) - ((today.year()-1980)/4) as f64).floor() as u32) {
-        res.push((3012, "春分の日"));
+        res.push((9012, "春分の日"));
     }
 
     res
