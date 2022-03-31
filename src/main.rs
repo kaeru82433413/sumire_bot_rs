@@ -11,6 +11,7 @@ use serenity::{
         StandardFramework,
     },
     model::prelude::*,
+    utils::MemberParseError,
 };
 use sumire_bot::loops;
 
@@ -56,7 +57,10 @@ async fn after(ctx: &Context, msg: &Message, command_name: &str, command_result:
                 _ => unreachable!(),
             };
         msg.channel_id.say(&ctx, format!(r#"引数として与えられた"{}"を整数に変換できませんでした({})"#, strings::safe(raw), reason)).await.unwrap();
-        
+    
+    } else if let Some(_) = err.downcast_ref::<MemberParseError>() {
+        msg.reply(ctx, "メンバーが見つかりませんでした").await.unwrap();
+
     } else {
         eprintln!("{} でエラーが発生しました: {:?}", command_name, err);
         discord::send_log(ctx, err).await;
