@@ -25,9 +25,9 @@ static ROLES: Lazy<HashMap<RoleId, &str>> = Lazy::new(|| {
 
 
 #[command]
-#[aliases("pt")]
+#[aliases("cn", "point", "pt")]
 #[sub_commands(ranking, transfer, random, daily)]
-async fn point(ctx: &Context, msg: &Message) -> CommandResult {
+async fn coin(ctx: &Context, msg: &Message) -> CommandResult {
     msg.reply(&ctx, "正しいサブコマンドが指定されませんでした").await?;
     Ok(())
 }
@@ -67,11 +67,11 @@ async fn ranking(ctx: &Context, msg: &Message, args: Args) -> CommandResult {
         if i%10!=0 {
             description.push("\n");
         }
-        description.push(&format!("{}位 {}pt: ", rank, point))
+        description.push(&format!("{}位 {}枚: ", rank, point))
             .mention(&members_map[&id]);
     }
 
-    let title = format!("ポイントランキング ({}/{}ページ)", page+1, pages);
+    let title = format!("所持コインランキング ({}/{}ページ)", page+1, pages);
     reply_to(ctx, msg, |m| {
         m.embed(|e| {
             e.title(title)
@@ -104,7 +104,7 @@ async fn transfer(ctx: &Context, msg: &Message, args: Args) -> CommandResult {
     let mut target_data = database::get_member_data(&conn, target.user.id.0 as i64)?;
 
     if executer_data.point < value {
-        msg.reply(ctx, format!("所持ポイントが足りないため実行できません(所持ポイント:{})", executer_data.point)).await?;
+        msg.reply(ctx, format!("所持コインが足りないため実行できません(所持コイン枚数:{})", executer_data.point)).await?;
         return Ok(());
     }
 
@@ -118,7 +118,7 @@ async fn transfer(ctx: &Context, msg: &Message, args: Args) -> CommandResult {
     diesel::update(&target_data).set(&target_data).execute(&conn)?;
 
     let target_name = strings::safe(&target.display_name());
-    msg.reply(ctx, format!("{}に{}ポイント譲渡しました\n{}\n{}", &target_name, value,
+    msg.reply(ctx, format!("{}に{}枚譲渡しました\n{}\n{}", &target_name, value,
         executer_trans, target_trans)).await?;
     Ok(())
 }
@@ -135,7 +135,7 @@ async fn random(ctx: &Context, msg: &Message, args: Args) -> CommandResult {
     
     let mut data = database::get_member_data(&conn, msg.author.id.0 as i64)?;
     if data.point < value {
-        msg.reply(ctx, format!("所持ポイントが足りないため実行できません(所持ポイント:{})", data.point)).await?;
+        msg.reply(ctx, format!("所持コインが足りないため実行できません(所持コイン枚数:{})", data.point)).await?;
         return Ok(());
     }
 
@@ -184,7 +184,7 @@ async fn daily(ctx: &Context, msg: &Message) -> CommandResult {
     data.point += value;
     data.last_daily = today;
     diesel::update(&data).set(&data).execute(&conn)?;
-    msg.reply(ctx, format!("デイリーボーナスを受け取りました！{}ptゲット！\n{}", value, point_trans.after(data.point))).await?;
+    msg.reply(ctx, format!("デイリーボーナスを受け取りました！{}枚ゲット！\n{}", value, point_trans.after(data.point))).await?;
     Ok(())
 }
 
@@ -258,5 +258,5 @@ async fn remove(ctx: &Context, msg: &Message, args: Args) -> CommandResult {
 
 
 #[group]
-#[commands(point, role)]
+#[commands(coin, role)]
 struct SumireServer;

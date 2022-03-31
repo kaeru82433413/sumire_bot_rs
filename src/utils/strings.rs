@@ -101,7 +101,7 @@ impl Display for PointTransition {
             Some(value) => value,
             None => self.before.unwrap() + self.increase.unwrap(),
         };
-        write!(f, "{}の所持ポイント：{}→{}", self.name, before, after)?;
+        write!(f, "{}の所持コイン：{}→{}", self.name, before, after)?;
         Ok(())
     }
 }
