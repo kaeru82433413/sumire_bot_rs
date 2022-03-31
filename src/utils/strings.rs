@@ -55,10 +55,6 @@ pub fn display_name(msg: &Message) -> String {
     msg.author.name.clone()
 }
 
-pub fn point_transition(name: impl std::string::ToString, before: i32, after: i32) -> String {
-    format!("{}の所持ポイント：{}→{}", safe(&name.to_string()), before, after)
-}
-
 
 use serenity::model::guild::Member;
 
