@@ -18,7 +18,10 @@ async fn sql(ctx: &Context, msg: &Message, args: Args) -> CommandResult {
     Ok(())
 }
 
+mod coin_manage;
+use coin_manage::COIN_MANAGE_COMMAND;
+
 #[group]
 #[owners_only]
-#[commands(sql)]
+#[commands(sql, coin_manage)]
 struct Owner;
