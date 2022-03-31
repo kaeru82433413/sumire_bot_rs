@@ -28,7 +28,7 @@ static ROLES: Lazy<HashMap<RoleId, &str>> = Lazy::new(|| {
 #[aliases("pt")]
 #[sub_commands(ranking, transfer, random, daily)]
 async fn point(ctx: &Context, msg: &Message) -> CommandResult {
-    msg.channel_id.say(&ctx, "正しいサブコマンドが指定されませんでした").await?;
+    msg.reply(&ctx, "正しいサブコマンドが指定されませんでした").await?;
     Ok(())
 }
 
@@ -192,7 +192,7 @@ async fn daily(ctx: &Context, msg: &Message) -> CommandResult {
 #[command]
 #[sub_commands(list, add, remove)]
 async fn role(ctx: &Context, msg: &Message) -> CommandResult {
-    msg.channel_id.say(&ctx, "正しいサブコマンドが指定されませんでした").await?;
+    msg.reply(&ctx, "正しいサブコマンドが指定されませんでした").await?;
     Ok(())
 }
 

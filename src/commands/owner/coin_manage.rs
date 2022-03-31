@@ -15,7 +15,7 @@ use crate::utils::*;
 #[aliases(cn_manage, coinm, cnm)]
 #[sub_commands(add, set)]
 async fn coin_manage(ctx: &Context, msg: &Message) -> CommandResult {
-    msg.channel_id.say(&ctx, "正しいサブコマンドが指定されませんでした").await?;
+    msg.reply(&ctx, "正しいサブコマンドが指定されませんでした").await?;
     Ok(())
 }
 

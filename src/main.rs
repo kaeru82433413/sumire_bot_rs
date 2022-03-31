@@ -45,7 +45,7 @@ async fn after(ctx: &Context, msg: &Message, command_name: &str, command_result:
     };
 
     if let Some(_) = err.downcast_ref::<args_wrapper::Eos>() {
-        msg.channel_id.say(&ctx, "引数が足りません").await.unwrap();
+        msg.reply(&ctx, "引数が足りません").await.unwrap();
 
     } else if let Some(args_wrapper::ParseError::<ParseIntError>(raw, error)) = err.downcast_ref() {
         let reason = match error.kind() {
@@ -56,7 +56,7 @@ async fn after(ctx: &Context, msg: &Message, command_name: &str, command_result:
                 IntErrorKind::Zero => "0は使用できません",
                 _ => unreachable!(),
             };
-        msg.channel_id.say(&ctx, format!(r#"引数として与えられた"{}"を整数に変換できませんでした({})"#, strings::safe(raw), reason)).await.unwrap();
+        msg.reply(&ctx, format!(r#"引数として与えられた"{}"を整数に変換できませんでした({})"#, strings::safe(raw), reason)).await.unwrap();
     
     } else if let Some(_) = err.downcast_ref::<MemberParseError>() {
         msg.reply(ctx, "メンバーが見つかりませんでした").await.unwrap();

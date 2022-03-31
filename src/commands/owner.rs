@@ -14,7 +14,7 @@ async fn sql(ctx: &Context, msg: &Message, args: Args) -> CommandResult {
     let conn = get_connection(ctx).await;
     let query = args.message();
     let res = diesel::sql_query(query).execute(&conn)?;
-    msg.channel_id.say(&ctx, format!("Result rows: {:}", res)).await?;
+    msg.reply(&ctx, format!("Result rows: {:}", res)).await?;
     Ok(())
 }
 
