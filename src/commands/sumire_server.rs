@@ -171,9 +171,10 @@ async fn daily(ctx: &Context, msg: &Message) -> CommandResult {
     let before_point = data.point;
     let value = { // ThreadRngは!Sendなのですぐにdropさせる
         let mut rng = thread_rng();
-        if rng.gen::<f64>() < 0.01 {256} else {
-            random::round(11744.0/99.0 + rng.gen_range(-40.0..=40.0))
-            // 11744/99(≒118.62)は方程式(256+99*x)/100=120の解
+        if rng.gen::<f64>() < 0.01 {1000} else {
+            random::round(1000.0/9.0 + rng.gen_range(-40.0..=40.0))
+            // 1000/9(≒111.11)は方程式1000*0.01+x*0.99=120の解
+            // 1%の確率で1000が出て、全体の期待値を120にする
         }
     };
     data.point += value;
