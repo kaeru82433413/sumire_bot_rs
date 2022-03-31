@@ -113,7 +113,7 @@ async fn transfer(ctx: &Context, msg: &Message, args: Args) -> CommandResult {
     diesel::update(&executer_data).set(&executer_data).execute(&conn)?;
     diesel::update(&target_data).set(&target_data).execute(&conn)?;
 
-    let target_name = strings::safe(target.nick.as_ref().unwrap_or(&target.user.name));
+    let target_name = strings::safe(&target.display_name());
     msg.reply(ctx, format!("{}に{}ポイント譲渡しました\n{}\n{}", &target_name, value,
         strings::point_transition(strings::display_name(msg), executer_data.point+value, executer_data.point),
         strings::point_transition(&target_name, target_data.point-value, target_data.point))).await?;
