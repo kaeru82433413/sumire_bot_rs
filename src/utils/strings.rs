@@ -58,3 +58,54 @@ pub fn display_name(msg: &Message) -> String {
 pub fn point_transition(name: impl std::string::ToString, before: i32, after: i32) -> String {
     format!("{}の所持ポイント：{}→{}", safe(&name.to_string()), before, after)
 }
+
+
+use serenity::model::guild::Member;
+
+pub struct PointTransition {
+    name: String,
+    before: Option<i32>,
+    after: Option<i32>,
+    increase: Option<i32>,
+}
+
+impl PointTransition {
+    pub fn new(member: &Member) -> Self {
+        Self::name(&member.display_name())
+    }
+    pub fn name(raw_name: &str) -> Self {
+        Self {
+            name: safe(raw_name),
+            before: None, after: None, increase: None,
+        }
+    }
+
+    pub fn before(mut self, value: i32) -> Self {
+        self.before = Some(value);
+        self
+    }
+    pub fn after(mut self, value: i32) -> Self {
+        self.after = Some(value);
+        self
+    }
+    pub fn increase(mut self, value: i32) -> Self {
+        self.increase = Some(value);
+        self
+    }
+}
+
+use std::fmt::{Display, Formatter, Result};
+impl Display for PointTransition {
+    fn fmt(&self, f: &mut Formatter) -> Result {
+        let before = match self.before {
+            Some(value) => value,
+            None => self.after.unwrap() - self.increase.unwrap(),
+        };
+        let after = match self.after {
+            Some(value) => value,
+            None => self.before.unwrap() + self.increase.unwrap(),
+        };
+        write!(f, "{}の所持ポイント：{}→{}", self.name, before, after)?;
+        Ok(())
+    }
+}

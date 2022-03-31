@@ -108,6 +108,10 @@ async fn transfer(ctx: &Context, msg: &Message, args: Args) -> CommandResult {
         return Ok(());
     }
 
+    let executer_trans = strings::PointTransition::name(&strings::display_name(msg))
+        .before(executer_data.point).increase(-value);
+    let target_trans = strings::PointTransition::new(&target)
+        .before(target_data.point).increase(value);
     executer_data.point -= value;
     target_data.point += value;
     diesel::update(&executer_data).set(&executer_data).execute(&conn)?;
@@ -115,8 +119,7 @@ async fn transfer(ctx: &Context, msg: &Message, args: Args) -> CommandResult {
 
     let target_name = strings::safe(&target.display_name());
     msg.reply(ctx, format!("{}に{}ポイント譲渡しました\n{}\n{}", &target_name, value,
-        strings::point_transition(strings::display_name(msg), executer_data.point+value, executer_data.point),
-        strings::point_transition(&target_name, target_data.point-value, target_data.point))).await?;
+        executer_trans, target_trans)).await?;
     Ok(())
 }
 
@@ -131,11 +134,12 @@ async fn random(ctx: &Context, msg: &Message, args: Args) -> CommandResult {
     }
     
     let mut data = database::get_member_data(&conn, msg.author.id.0 as i64)?;
-    let before_point = data.point;
-    if before_point < value {
+    if data.point < value {
         msg.reply(ctx, format!("所持ポイントが足りないため実行できません(所持ポイント:{})", data.point)).await?;
         return Ok(());
     }
+
+    let point_trans = strings::PointTransition::name(&strings::display_name(msg)).before(data.point);
 
     let mut reply_message = MessageBuilder::new();
     if rand::random() {
@@ -145,7 +149,7 @@ async fn random(ctx: &Context, msg: &Message, args: Args) -> CommandResult {
         data.point -= value;
         reply_message.push("残念！はずれ！\n");
     };
-    reply_message.push(strings::point_transition(strings::display_name(msg), before_point, data.point));
+    reply_message.push(point_trans.after(data.point));
 
     diesel::update(&data).set(&data).execute(&conn)?;
     msg.reply(ctx, reply_message).await?;
@@ -168,7 +172,7 @@ async fn daily(ctx: &Context, msg: &Message) -> CommandResult {
         return Ok(());
     }
 
-    let before_point = data.point;
+    let point_trans = strings::PointTransition::name(&strings::display_name(msg)).before(data.point);
     let value = { // ThreadRngは!Sendなのですぐにdropさせる
         let mut rng = thread_rng();
         if rng.gen::<f64>() < 0.01 {1000} else {
@@ -180,7 +184,7 @@ async fn daily(ctx: &Context, msg: &Message) -> CommandResult {
     data.point += value;
     data.last_daily = today;
     diesel::update(&data).set(&data).execute(&conn)?;
-    msg.reply(ctx, format!("デイリーボーナスを受け取りました！{}ptゲット！\n{}", value, strings::point_transition(strings::display_name(msg), before_point, data.point))).await?;
+    msg.reply(ctx, format!("デイリーボーナスを受け取りました！{}ptゲット！\n{}", value, point_trans.after(data.point))).await?;
     Ok(())
 }
 
