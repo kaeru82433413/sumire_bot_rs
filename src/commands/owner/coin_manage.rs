@@ -33,9 +33,8 @@ async fn add(ctx: &Context, msg: &Message, args: Args) -> CommandResult {
     target_data.point += increase;
     diesel::update(&target_data).set(&target_data).execute(&conn)?;
 
-    let target_name = strings::safe(target.nick.as_ref().unwrap_or(&target.user.name));
     msg.reply(ctx, format!("所持コインに{}を加算しました。\n{}", increase,
-        strings::point_transition(&target_name, target_data.point-increase, target_data.point)
+        strings::PointTransition::new(&target).increase(increase).after(target_data.point)
         )).await?;
 
     Ok(())
