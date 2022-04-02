@@ -16,8 +16,8 @@ async fn sql(ctx: &Context, msg: &Message, args: Args) -> CommandResult {
 
     let result = diesel::sql_query(query).execute(&conn);
     match result {
-        Ok(count) => msg.reply(&ctx, format!("Result rows: {:}", count)).await?,
-        Err(err) => msg.reply(&ctx, format!("Error: {:?}", err)).await?,
+        Ok(count) => msg.reply(ctx, format!("Result rows: {:}", count)).await?,
+        Err(err) => msg.reply(ctx, format!("Error: {:?}", err)).await?,
     };
     Ok(())
 }
