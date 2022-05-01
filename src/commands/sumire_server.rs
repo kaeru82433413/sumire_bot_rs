@@ -26,6 +26,7 @@ static ROLES: Lazy<HashMap<RoleId, &str>> = Lazy::new(|| {
 
 
 #[command]
+#[description("コインに関するコマンドです。")]
 #[aliases("cn", "point", "pt")]
 #[sub_commands(ranking, transfer, random, daily)]
 async fn coin(ctx: &Context, msg: &Message) -> CommandResult {
@@ -34,6 +35,8 @@ async fn coin(ctx: &Context, msg: &Message) -> CommandResult {
 }
 
 #[command]
+#[description("所持コインランキングを表示します。")]
+#[usage("<ページ>")]
 async fn ranking(ctx: &Context, msg: &Message, args: Args) -> CommandResult {
     let mut args = ArgsWrapper(args);
     let page: usize = args.parse()?.unwrap_or(1); // 何ページ目か(1-based)
@@ -83,6 +86,9 @@ async fn ranking(ctx: &Context, msg: &Message, args: Args) -> CommandResult {
 }
 
 #[command]
+#[description("持っているコインを他人に譲渡します。")]
+#[usage("<対象> <量>")]
+#[example("かえるさん 100")]
 async fn transfer(ctx: &Context, msg: &Message, args: Args) -> CommandResult {
     let mut args = ArgsWrapper(args);
     let target = args.string()?;
@@ -125,6 +131,8 @@ async fn transfer(ctx: &Context, msg: &Message, args: Args) -> CommandResult {
 }
 
 #[command]
+#[description("ランダムでコインを増減させます。50%の確率で指定量増加し、残りの50%で指定量現象します。")]
+#[usage("<量>")]
 async fn random(ctx: &Context, msg: &Message, args: Args) -> CommandResult {
     let value: i32 = ArgsWrapper(args).parse()??;
     let conn = get_connection(ctx).await;
@@ -159,6 +167,8 @@ async fn random(ctx: &Context, msg: &Message, args: Args) -> CommandResult {
 
 
 #[command]
+#[description("1日1回、ランダムでコインが手に入ります。日付の区切りはJST午前4時です。")]
+#[usage("")]
 async fn daily(ctx: &Context, msg: &Message) -> CommandResult {
     let conn = get_connection(ctx).await;
     let mut data = database::get_member_data(&conn, msg.author.id.0 as i64)?;
@@ -191,6 +201,7 @@ async fn daily(ctx: &Context, msg: &Message) -> CommandResult {
 
 
 #[command]
+#[description("ロールの管理を行えます。")]
 #[sub_commands(list, add, remove)]
 async fn role(ctx: &Context, msg: &Message) -> CommandResult {
     msg.reply(&ctx, "正しいサブコマンドが指定されませんでした").await?;
@@ -198,6 +209,8 @@ async fn role(ctx: &Context, msg: &Message) -> CommandResult {
 }
 
 #[command]
+#[description("着脱可能なロールの一覧を表示します。")]
+#[usage("")]
 async fn list(ctx: &Context, msg: &Message) -> CommandResult {
     let guild_roles = SUMIRE_GUILD.roles(ctx).await?;
     reply_to(ctx, msg, |m| {
@@ -214,6 +227,8 @@ async fn list(ctx: &Context, msg: &Message) -> CommandResult {
 }
 
 #[command]
+#[description("指定されたロールを実行者に付与します。")]
+#[usage("<ロール>")]
 async fn add(ctx: &Context, msg: &Message, args: Args) -> CommandResult {
     let mut member = msg.member(ctx).await?;
 
@@ -236,6 +251,8 @@ async fn add(ctx: &Context, msg: &Message, args: Args) -> CommandResult {
 }
 
 #[command]
+#[description("指定されたロールを実行者から削除します。")]
+#[usage("<ロール>")]
 async fn remove(ctx: &Context, msg: &Message, args: Args) -> CommandResult {
     let mut member = msg.member(ctx).await?;
 

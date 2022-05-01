@@ -77,6 +77,7 @@ async fn after(ctx: &Context, msg: &Message, command_name: &str, command_result:
 use sumire_bot::commands::*;
 use sumire_bot::consts;
 use sumire_bot::utils::*;
+use sumire_bot::help::{CommandList, CommandListKey};
 
 struct PrefixesKey;
 impl TypeMapKey for PrefixesKey {
@@ -113,6 +114,7 @@ async fn main() {
             }))
         .group(&SUMIRESERVER_GROUP)
         .group(&OWNER_GROUP)
+        .group(&BOT_GROUP)
         .after(after);
 
     
@@ -122,6 +124,11 @@ async fn main() {
     {
         let mut data = client.data.write().await;
         data.insert::<PrefixesKey>(prefixes);
+
+        let mut command_list = CommandList::new();
+        command_list.add_group(&BOT_GROUP);
+        command_list.add_group(&SUMIRESERVER_GROUP);
+        data.insert::<CommandListKey>(command_list);
     }
     database::insert_pool(&client).await;
     
