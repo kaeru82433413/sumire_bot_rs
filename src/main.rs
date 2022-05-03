@@ -115,6 +115,7 @@ async fn main() {
         .group(&SUMIRESERVER_GROUP)
         .group(&OWNER_GROUP)
         .group(&BOT_GROUP)
+        .group(&GENERAL_GROUP)
         .after(after);
 
     
@@ -128,6 +129,7 @@ async fn main() {
         let mut command_list = CommandList::new();
         command_list.add_group(&BOT_GROUP);
         command_list.add_group(&SUMIRESERVER_GROUP);
+        command_list.add_group(&GENERAL_GROUP);
         data.insert::<CommandListKey>(command_list);
     }
     database::insert_pool(&client).await;
