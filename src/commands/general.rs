@@ -62,8 +62,7 @@ async fn lcm(ctx: &Context, msg: &Message, args: Args) -> CommandResult {
     for value in values {
         result = result.and_then(|mut result| {
             result /= num::integer::gcd(result, value);
-            result = result.checked_mul(value)?;
-            result = result.checked_abs()?;
+            result = result.checked_mul(value)?.checked_abs()?;
             Some(result)
         });
     }
