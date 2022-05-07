@@ -38,7 +38,7 @@ async fn point(ctx: &Context, msg: &Message) -> CommandResult {
 #[aliases("cn")]
 #[sub_commands(ranking, transfer, random, daily)]
 async fn coin(ctx: &Context, msg: &Message) -> CommandResult {
-    msg.reply(&ctx, "正しいサブコマンドが指定されませんでした").await?;
+    msg.reply(ctx, "正しいサブコマンドが指定されませんでした").await?;
     Ok(())
 }
 
@@ -212,7 +212,7 @@ async fn daily(ctx: &Context, msg: &Message) -> CommandResult {
 #[description("ロールの管理を行えます。")]
 #[sub_commands(list, add, remove)]
 async fn role(ctx: &Context, msg: &Message) -> CommandResult {
-    msg.reply(&ctx, "正しいサブコマンドが指定されませんでした").await?;
+    msg.reply(ctx, "正しいサブコマンドが指定されませんでした").await?;
     Ok(())
 }
 
