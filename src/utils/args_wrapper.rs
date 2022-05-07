@@ -4,15 +4,19 @@ use serenity::{
     framework::standard::{Args, ArgError}
 };
 use std::str::FromStr;
-use std::fmt::{Display, Debug};
+use std::fmt::{self, Display, Debug};
 use std::error::Error;
 use crate::consts;
+use fraction::Fraction;
+use crate::utils::expression::{self, ExpressionError};
+
+
 
 #[derive(Debug)]
 pub struct ParseError<E: Debug>(pub String, pub E);
 
 impl<E: Debug> Display for ParseError<E> {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(f, "ParseError({:?})", self.1)?;
         Ok(())
     }
@@ -21,17 +25,19 @@ impl<E: Debug> Display for ParseError<E> {
 impl<E: Debug> Error for ParseError<E> {}
 
 
+
 #[derive(Debug)]
 pub struct Eos;
 
 impl Display for Eos {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(f, "Reached end of args")?;
         Ok(())
     }
 }
 
 impl Error for Eos {}
+
 
 
 pub struct ArgsWrapper(pub Args);
@@ -62,6 +68,15 @@ impl ArgsWrapper {
             Ok(value) => Ok(Ok(value)),
             Err(error) => Err(ParseError(raw, error)),
         }
+    }
+
+    pub fn expression(&mut self) -> Result<Result<Fraction, Eos>, ExpressionError> where {
+        let raw = match self.string() {
+            Ok(raw) => raw,
+            Err(eos) => return Ok(Err(eos)),
+        };
+        
+        expression::calc(&raw).map(|x| Ok(x))
     }
 
     pub async fn member(ctx: &Context, msg: &Message, query: &str) -> Result<Option<Member>, SerenityError> {

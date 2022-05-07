@@ -1,6 +1,8 @@
 pub mod args_wrapper;
 pub use args_wrapper::ArgsWrapper;
 
+pub mod expression;
+
 pub mod database;
 pub use database::get_connection;
 

@@ -58,6 +58,9 @@ async fn after(ctx: &Context, msg: &Message, command_name: &str, command_result:
             };
         msg.reply(&ctx, format!(r#"引数として与えられた"{}"を整数に変換できませんでした({})"#, strings::safe(raw), reason)).await.unwrap();
     
+    } else if let Some(error) = err.downcast_ref::<expression::ExpressionError>() {
+        msg.reply(ctx, format!("引数エラー：{}", error)).await.unwrap();
+
     } else if let Some(_) = err.downcast_ref::<MemberParseError>() {
         msg.reply(ctx, "メンバーが見つかりませんでした").await.unwrap();
 
