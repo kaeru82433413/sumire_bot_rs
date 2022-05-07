@@ -24,10 +24,18 @@ static ROLES: Lazy<HashMap<RoleId, &str>> = Lazy::new(|| {
     ])
 });
 
+#[command]
+#[description("coinに名称変更されました。")]
+#[aliases("pt")]
+#[usage("")]
+async fn point(ctx: &Context, msg: &Message) -> CommandResult {
+    msg.reply(ctx, "pointコマンドは名称変更されました。coinコマンドを使ってください。").await?;
+    Ok(())
+}
 
 #[command]
 #[description("コインに関するコマンドです。")]
-#[aliases("cn", "point", "pt")]
+#[aliases("cn")]
 #[sub_commands(ranking, transfer, random, daily)]
 async fn coin(ctx: &Context, msg: &Message) -> CommandResult {
     msg.reply(&ctx, "正しいサブコマンドが指定されませんでした").await?;
@@ -276,5 +284,5 @@ async fn remove(ctx: &Context, msg: &Message, args: Args) -> CommandResult {
 
 
 #[group]
-#[commands(coin, role)]
+#[commands(coin, role, point)]
 struct SumireServer;
